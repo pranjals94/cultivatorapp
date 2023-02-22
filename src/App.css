@@ -1,0 +1,61 @@
+/* set to entire page, under body tag */
+body{ 
+  user-select: none;
+}
+
+.App {
+    max-width: 300px;
+    margin: auto;
+    background: white;
+    padding: 10px;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.bg-cardbody{
+  background:radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(233,228,148,1) 100%);
+  border-radius: 0.2rem;
+}
+
+.hovr:hover{
+  background: palegoldenrod;
+  cursor: pointer;
+  /* border: 1px solid blue; */
+  /* position: absolute; */
+}
+
+.cultivatorActive{
+  border: 3px solid rgb(147, 9, 69);
+}
