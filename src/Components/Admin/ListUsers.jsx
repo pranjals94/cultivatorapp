@@ -16,7 +16,7 @@ const ListUsers = () => {
   return (
     <>
       <div className="table-responsive">
-        <table class="table table-hover">
+        <table className="table table-hover">
           <thead>
             <tr>
               <th scope="col">Sl No.</th>

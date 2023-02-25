@@ -57,5 +57,14 @@ body{
 }
 
 .cultivatorActive{
+  border: 2px solid rgb(147, 9, 69);
+}
+
+.userHighliter{
+  vertical-align: middle;
+  width:fit-content;
+  background: rgb(236, 255, 30);
+  border-radius: 1em;
   border: 3px solid rgb(147, 9, 69);
 }
+

@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
 import HttpService from "../../Services/HttpService";
-const ListPersons = () => {
+const ListPersons = (props) => {
+  const [reload, setReload] = useState(props.pageReload); // for build
+  if (props.pageReload){props.pageReload=false; setReload(true);} //triggers use effect as 'reload' state is provided as dependency
   const [persons, setPersons] = useState([]); // for build
   // const [persons, setPersons] = useState([
   //   { id: 1, name: "pranjal", role: "ADMIN" },
   //   { id: 2, name: "Chandan" },
+  //   { id: 3, name: "Chandan" },
+  //   { id: 4, name: "Chandan" },
+  //   { id: 5, name: "Chandan" },
+  //   { id: 6, name: "Chandan", role:"Cultivator"},
   // ]);
   const [roles, setRoles] = useState([]); // for build
   // const [roles, setRoles] = useState([
@@ -22,8 +28,10 @@ const ListPersons = () => {
   });
 
   useEffect(() => {
+    
     HttpService.get("/application/listpersons").then(
       (response) => {
+        console.log("from list persons component")
         setPersons(response.data.persons);
       },
       (error) => {
@@ -37,8 +45,8 @@ const ListPersons = () => {
       (error) => {
         // alert("OOps!.. Somwthing went wrong");
       }
-    );
-  }, []);
+    );setReload(false)
+  }, [reload]);
 
   console.log("persons", persons);
 
@@ -73,8 +81,9 @@ const ListPersons = () => {
 
   return (
     <>
+    {props.name}
       <div className="table-responsive">
-        <table class="table table-hover">
+        <table className="table table-hover">
           <thead>
             <tr>
               <th scope="col">Sl No.</th>
@@ -89,13 +98,16 @@ const ListPersons = () => {
               <tr
                 onClick={() => onModelShow(item)}
                 data-toggle="modal"
-                data-target="#exampleModal"
-                className={item.role ? "bg-info" : null}>
+                data-target="#exampleModal">
                 <th scope="row">{indx + 1}</th>
                 <td>{item.name}</td>
                 <td>{item.phone_no}</td>
                 <td>{item.gender}</td>
-                <td>{item.role}</td>
+                <td>
+                  <span className={item.role ? "userHighliter px-2" : null}>
+                    {item.role}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -103,30 +115,30 @@ const ListPersons = () => {
       </div>
       {/* //------------------------Modal starts------------------------------------ */}
       <div
-        class="modal fade"
+        className="modal fade"
         id="exampleModal"
-        tabindex="-1"
+        tabIndex="-1"
         role="dialog"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h6 class="modal-title" id="exampleModalLabel">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h6 className="modal-title" id="exampleModalLabel">
                 [{modalData.id}] {modalData.name}
               </h6>
               <button
                 type="button"
-                class="close"
+                className="close"
                 data-dismiss="modal"
                 aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             {modalData.role ? (
-              <div class="modal-body">This Person is Already Registered</div>
+              <div className="modal-body">This Person is Already Registered</div>
             ) : (
-              <div class="modal-body">
+              <div className="modal-body">
                 <div className="form-group ">
                   <label htmlFor="username"> Create Username</label>
                   <input
@@ -165,10 +177,10 @@ const ListPersons = () => {
                 {/* //--------------input role end------------------ */}
               </div>
             )}
-            <div class="modal-footer">
+            <div className="modal-footer">
               <button
                 type="button"
-                class="btn btn-secondary"
+                className="btn btn-secondary"
                 data-dismiss="modal">
                 Close
               </button>
@@ -176,7 +188,7 @@ const ListPersons = () => {
                 <button
                   onClick={createUserClicked}
                   type="button"
-                  class="btn btn-primary"
+                  className="btn btn-primary"
                   data-dismiss="modal">
                   Create User
                 </button>

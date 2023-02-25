@@ -8,6 +8,7 @@ import ListPersons from "./ListPersons";
 
 const AdminPage = () => {
   const [userData, setUserData] = useState({});
+  const [reloadPage, setReloadPage] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone_no: "",
@@ -17,6 +18,8 @@ const AdminPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setReloadPage(false);
+    console.log("use effect triggered");
     HttpService.get("/application/getuser").then(
       (response) => {
         setUserData(response.data);
@@ -26,7 +29,7 @@ const AdminPage = () => {
         // alert("OOps!.. Somwthing went wrong");
       }
     );
-  }, []);
+  }, [reloadPage]);
 
   function logout() {
     HttpService.get("/auth/logout").then(
@@ -53,6 +56,7 @@ const AdminPage = () => {
       (response) => {
         console.log(response);
         alert(response.data.msg);
+        setReloadPage(true);
       },
       (error) => {
         console.log(error);
@@ -109,13 +113,13 @@ const AdminPage = () => {
         <ul className="nav nav-pills pt-3" id="myTab" role="tablist">
           <li className="nav-item">
             <a
-              className="nav-link active"
+              className="nav-link"
               id="add-new-person-tab"
               data-toggle="tab"
               href="#add-new-person"
               role="tab"
               aria-controls="add-new-person"
-              aria-selected="true">
+              aria-selected="false">
               Add New Person
             </a>
           </li>
@@ -145,13 +149,13 @@ const AdminPage = () => {
           </li>
           <li className="nav-item">
             <a
-              className="nav-link"
+              className="nav-link active"
               id="list-persons-tab"
               data-toggle="tab"
               href="#list-persons"
               role="tab"
               aria-controls="list-persons"
-              aria-selected="false">
+              aria-selected="true">
               List Persons
             </a>
           </li>
@@ -159,7 +163,7 @@ const AdminPage = () => {
         <hr />
         <div className="tab-content" id="myTabContent">
           <div
-            className="tab-pane fade show active"
+            className="tab-pane fade "
             id="add-new-person"
             role="tabpanel"
             aria-labelledby="add-new-person-tab">
@@ -267,11 +271,12 @@ const AdminPage = () => {
             List Cultivators
           </div>
           <div
-            className="tab-pane fade"
+            className="tab-pane fade show active"
             id="list-persons"
             role="tabpanel"
             aria-labelledby="list-persons-tab">
-            <ListPersons />
+            <ListPersons pageReload={true} />{/* // child components use effect does not run when parent 
+            components any of the state is changed */}
           </div>
         </div>
       </div>
