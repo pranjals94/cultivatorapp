@@ -3,7 +3,6 @@ import { useLocation, Navigate, useNavigate, Link } from "react-router-dom";
 import HttpService from "../../Services/HttpService";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
-import ListUsers from "./ListUsers";
 import ListPersons from "./ListPersons";
 
 const AdminPage = () => {
@@ -15,11 +14,30 @@ const AdminPage = () => {
     gender: "",
     email: "",
   });
+
+
+  // const [persons, setPersons] = useState([]); // for build
+  const [persons, setPersons] = useState([
+    { id: 1, name: "pranjal", role: "ADMIN" },
+    { id: 2, name: "Chandan" },
+    { id: 3, name: "Chandan" },
+    { id: 4, name: "Chandan" },
+    { id: 5, name: "Chandan" },
+    { id: 6, name: "Chandan", role:"Cultivator"},
+  ]);
+  // const [roles, setRoles] = useState([]); // for build
+  const [roles, setRoles] = useState([
+    { id: 1, name: "ADMIN" },
+    { id: 2, name: "Cultivator" },
+    { id: 3, name: "Orientation" },
+  ]);
+
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    setReloadPage(false);
-    console.log("use effect triggered");
+    console.log("Admin page use effect triggered");
     HttpService.get("/application/getuser").then(
       (response) => {
         setUserData(response.data);
@@ -29,6 +47,27 @@ const AdminPage = () => {
         // alert("OOps!.. Somwthing went wrong");
       }
     );
+
+
+    HttpService.get("/application/listpersons").then(
+      (response) => {
+        console.log("from list persons component");
+        setPersons(response.data.persons);
+      },
+      (error) => {
+        // alert("OOps!.. Somwthing went wrong");
+      }
+    );
+
+    HttpService.get("/application/getroles").then(
+      (response) => {
+        setRoles(response.data.roles);
+      },
+      (error) => {
+        // alert("OOps!.. Somwthing went wrong");
+      }
+    );
+
   }, [reloadPage]);
 
   function logout() {
@@ -52,11 +91,11 @@ const AdminPage = () => {
 
   const onSubmit = () => {
     console.log("form data", formData);
+    setReloadPage(!reloadPage); // just toggle the state to reload page including use effect dependency
     HttpService.post("/application/createperson", formData).then(
       (response) => {
         console.log(response);
         alert(response.data.msg);
-        setReloadPage(true);
       },
       (error) => {
         console.log(error);
@@ -64,6 +103,8 @@ const AdminPage = () => {
       }
     );
   };
+
+  // console.log(" Admin page reload", reloadPage);
 
   return (
     <>
@@ -121,30 +162,6 @@ const AdminPage = () => {
               aria-controls="add-new-person"
               aria-selected="false">
               Add New Person
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              id="list-users-tab"
-              data-toggle="tab"
-              href="#list-users"
-              role="tab"
-              aria-controls="list-users"
-              aria-selected="false">
-              List Users
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              id="list-cultivators-tab"
-              data-toggle="tab"
-              href="#list-cultivators"
-              role="tab"
-              aria-controls="list-cultivators"
-              aria-selected="false">
-              List Cultivators
             </a>
           </li>
           <li className="nav-item">
@@ -257,25 +274,12 @@ const AdminPage = () => {
             {/* //-------------------------Addnew person form ends----------------- */}
           </div>
           <div
-            className="tab-pane fade"
-            id="list-users"
-            role="tabpanel"
-            aria-labelledby="list-users-tab">
-            <ListUsers />
-          </div>
-          <div
-            className="tab-pane fade"
-            id="list-cultivators"
-            role="tabpanel"
-            aria-labelledby="list-cultivators-tab">
-            List Cultivators
-          </div>
-          <div
             className="tab-pane fade show active"
             id="list-persons"
             role="tabpanel"
             aria-labelledby="list-persons-tab">
-            <ListPersons pageReload={true} />{/* // child components use effect does not run when parent 
+            <ListPersons persons={persons}  roles={roles}/>
+            {/* // child components use effect does not run when parent 
             components any of the state is changed */}
           </div>
         </div>

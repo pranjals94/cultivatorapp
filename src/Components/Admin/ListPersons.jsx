@@ -1,23 +1,7 @@
 import React, { useEffect, useState } from "react";
 import HttpService from "../../Services/HttpService";
 const ListPersons = (props) => {
-  const [reload, setReload] = useState(props.pageReload); // for build
-  if (props.pageReload){props.pageReload=false; setReload(true);} //triggers use effect as 'reload' state is provided as dependency
-  const [persons, setPersons] = useState([]); // for build
-  // const [persons, setPersons] = useState([
-  //   { id: 1, name: "pranjal", role: "ADMIN" },
-  //   { id: 2, name: "Chandan" },
-  //   { id: 3, name: "Chandan" },
-  //   { id: 4, name: "Chandan" },
-  //   { id: 5, name: "Chandan" },
-  //   { id: 6, name: "Chandan", role:"Cultivator"},
-  // ]);
-  const [roles, setRoles] = useState([]); // for build
-  // const [roles, setRoles] = useState([
-  //   { id: 1, name: "ADMIN" },
-  //   { id: 2, name: "Cultivator" },
-  //   { id: 3, name: "Orientation" },
-  // ]);
+  console.log("list person (child) component props", props);
 
   const [modalData, setModalData] = useState({});
   const [modalFormData, setModalFormData] = useState({
@@ -26,29 +10,6 @@ const ListPersons = (props) => {
     password: "",
     role_id: "",
   });
-
-  useEffect(() => {
-    
-    HttpService.get("/application/listpersons").then(
-      (response) => {
-        console.log("from list persons component")
-        setPersons(response.data.persons);
-      },
-      (error) => {
-        // alert("OOps!.. Somwthing went wrong");
-      }
-    );
-    HttpService.get("/application/getroles").then(
-      (response) => {
-        setRoles(response.data.roles);
-      },
-      (error) => {
-        // alert("OOps!.. Somwthing went wrong");
-      }
-    );setReload(false)
-  }, [reload]);
-
-  console.log("persons", persons);
 
   const onchangeHandler = (e) => {
     let temp = modalFormData;
@@ -81,7 +42,7 @@ const ListPersons = (props) => {
 
   return (
     <>
-    {props.name}
+      {props.name}
       <div className="table-responsive">
         <table className="table table-hover">
           <thead>
@@ -94,8 +55,9 @@ const ListPersons = (props) => {
             </tr>
           </thead>
           <tbody>
-            {persons.map((item, indx) => (
+            {props.persons.map((item, indx) => (
               <tr
+              key={indx}
                 onClick={() => onModelShow(item)}
                 data-toggle="modal"
                 data-target="#exampleModal">
@@ -136,7 +98,9 @@ const ListPersons = (props) => {
               </button>
             </div>
             {modalData.role ? (
-              <div className="modal-body">This Person is Already Registered</div>
+              <div className="modal-body">
+                This Person is Already Registered
+              </div>
             ) : (
               <div className="modal-body">
                 <div className="form-group ">
@@ -169,7 +133,7 @@ const ListPersons = (props) => {
                     className="form-control"
                     name="role_id"
                     onChange={(e) => onchangeHandler(e)}>
-                    {roles.map((item) => (
+                    {props.roles.map((item) => (
                       <option value={item.id}>{item.name}</option>
                     ))}
                   </select>

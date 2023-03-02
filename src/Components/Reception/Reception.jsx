@@ -8,12 +8,29 @@ import pic from "./user.jpg";
 const Reception = () => {
   // let width = window.innerWidth;
   const [userData, setUserData] = useState({});
-  const [cultivators, setCultivators] = useState([]);
-  const [guests, setGuests] = useState([]);
+  
+
   const [activeCultivator, setActiveCultivator] = useState({
     active: null,
     name: "Selected Cultivator",
   });
+
+  // const [guests, setGuests] = useState([]); // build purpose uncomment
+    const [guests, setGuests] = useState([
+    { id: 1, name: "pranjal", role: "ADMIN" },
+    { id: 2, name: "natalia" },
+    { id: 3, name: "Franco" },
+    { id: 4, name: "Lemord" },
+    { id: 5, name: "provius" },
+    { id: 6, name: "Lanchot", role:"Cultivator"},
+  ]);
+
+  // const [cultivators, setCultivators] = useState([]);
+  const [cultivators, setCultivators] = useState([
+    { id: 2, name: "Gatotkatcha" },
+    { id: 3, name: "Aamon" },
+    { id: 4, name: "Kadita" }
+  ]);
 
   const navigate = useNavigate();
 

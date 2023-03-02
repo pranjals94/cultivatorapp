@@ -1,12 +1,19 @@
 import React, { useEffect } from "react";
-import { useLocation, Navigate, useNavigate, Link } from "react-router-dom";
+import {useNavigate, Link } from "react-router-dom";
 import HttpService from "../../Services/HttpService";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleArrowRight,
+  faCircleArrowLeft
+} from "@fortawesome/free-solid-svg-icons";
+import Sidebar from "./Sidebar";
 
 const Cultivator = () => {
   const [userData, setUserData] = useState({});
   const navigate = useNavigate();
+  const [viewSideBar, setViewSideBar] = useState(false);
 
   useEffect(() => {
     HttpService.get("/application/getuser").then(
@@ -33,12 +40,32 @@ const Cultivator = () => {
     );
   }
 
+  const showSidebar = () => {
+    setViewSideBar(!viewSideBar);
+  };
+
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <a className="navbar-brand" href="">
-          Navbar w/ text
-        </a>
+        <div className="d-flex align-items-center">
+          {!viewSideBar ? (
+            <FontAwesomeIcon
+              onClick={showSidebar}
+              className="d-lg-none fa-2x border rounded p-2 ml-2"
+              icon={faCircleArrowRight}
+            />
+          ) : (
+            <FontAwesomeIcon
+              onClick={showSidebar}
+              className="d-lg-none fa-2x border rounded p-2 ml-2"
+              icon={faCircleArrowLeft}
+            />
+          )}
+          <a className="navbar-brand ml-2" href="#">
+            CULTIVATOR
+          </a>
+        </div>
+
         <button
           className="navbar-toggler"
           type="button"
@@ -53,7 +80,7 @@ const Cultivator = () => {
           <ul className="navbar-nav mr-auto">
             <li className="nav-item active">
               <Link className="nav-link" to={"/"}>
-                Home <span className="sr-only">(current)</span>
+                Home
               </Link>
             </li>
             <li className="nav-item">
@@ -78,7 +105,9 @@ const Cultivator = () => {
           </span>
         </div>
       </nav>
-      This is CULTIVATOR page welcome to the cultivator app
+      <div className={!viewSideBar ? "d-none d-lg-block" : ""}>
+        <Sidebar />
+      </div>
     </>
   );
 };
