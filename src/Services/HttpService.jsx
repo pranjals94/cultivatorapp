@@ -6,13 +6,14 @@ import axios from "axios";
 //500 Internal Server Error
 
 axios.interceptors.request.use(
-  (config) => {
+  (request) => {
     // Do something before request is sent
     document.body.classList.add("loading");
-    return config;
+    return request;
   },
   (error) => {
     // Do something with request error
+    document.body.classList.remove("loading");
     Promise.reject(error);
   }
 );
@@ -31,7 +32,9 @@ axios.interceptors.response.use(
     if (axios.isAxiosError(error)) {
       if (error.response) {
         if (error.response.status === 401) {
-          window.location.href = "/"; //redirect to root page
+          console.log("Unauthorised")
+          // alert("You are UnauthoriZed. Please Log In. ! ");
+          // window.location.href = "/app/login"; //redirect to login page
         }
       }
     }

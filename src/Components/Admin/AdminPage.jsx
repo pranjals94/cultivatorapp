@@ -1,55 +1,54 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useLocation, Navigate, useNavigate, Link } from "react-router-dom";
 import HttpService from "../../Services/HttpService";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import ListPersons from "./ListPersons";
+import { CultivatorAppContext } from "../../context/CultivatorAppContext";
+import { number } from "prop-types";
 
 const AdminPage = () => {
-  const [userData, setUserData] = useState({});
+  // const [userData, setUserData] = useState({});
+  const a = useContext(CultivatorAppContext);
+  // console.log("adminpage",a.user.role)
   const [reloadPage, setReloadPage] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    phone_no: "",
+    phone_no: Number,
     gender: "",
     email: "",
   });
 
-
-  // const [persons, setPersons] = useState([]); // for build
-  const [persons, setPersons] = useState([
-    { id: 1, name: "pranjal", role: "ADMIN" },
-    { id: 2, name: "Chandan" },
-    { id: 3, name: "Chandan" },
-    { id: 4, name: "Chandan" },
-    { id: 5, name: "Chandan" },
-    { id: 6, name: "Chandan", role:"Cultivator"},
-  ]);
-  // const [roles, setRoles] = useState([]); // for build
-  const [roles, setRoles] = useState([
-    { id: 1, name: "ADMIN" },
-    { id: 2, name: "Cultivator" },
-    { id: 3, name: "Orientation" },
-  ]);
-
-
+  const [persons, setPersons] = useState([]); // for build
+  // const [persons, setPersons] = useState([
+  //   { id: 1, name: "pranjal", role: "ADMIN" },
+  //   { id: 2, name: "Chandan" },
+  //   { id: 3, name: "Chandan" },
+  //   { id: 4, name: "Chandan" },
+  //   { id: 5, name: "Chandan" },
+  //   { id: 6, name: "Chandan", role: "Cultivator" },
+  // ]);
+  const [roles, setRoles] = useState([]); // for build
+  // const [roles, setRoles] = useState([
+  //   { id: 1, name: "ADMIN" },
+  //   { id: 2, name: "Cultivator" },
+  //   { id: 3, name: "Orientation" },
+  // ]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Admin page use effect triggered");
-    HttpService.get("/application/getuser").then(
-      (response) => {
-        setUserData(response.data);
-        console.log(response);
-      },
-      (error) => {
-        // alert("OOps!.. Somwthing went wrong");
-      }
-    );
+    // HttpService.get("/application/getuser").then(
+    //   (response) => {
+    //     setUserData(response.data);
+    //     console.log(response);
+    //   },
+    //   (error) => {
+    //     // alert("OOps!.. Somwthing went wrong");
+    //   }
+    // );
 
-
-    HttpService.get("/application/listpersons").then(
+    HttpService.get("/admin/listpersons").then(
       (response) => {
         console.log("from list persons component");
         setPersons(response.data.persons);
@@ -67,7 +66,6 @@ const AdminPage = () => {
         // alert("OOps!.. Somwthing went wrong");
       }
     );
-
   }, [reloadPage]);
 
   function logout() {
@@ -139,8 +137,8 @@ const AdminPage = () => {
             </li>
           </ul>
           <span className="navbar-text pr-3">
-            Welcome {userData.role}{" "}
-            <i style={{ color: "red" }}>{userData.nameOfUser}</i> !
+            Welcome {a.user.role}{" "}
+            <i style={{ color: "red" }}>{a.user.nameOfUser}</i> !
           </span>
           <span className="navbar-text pr-3">
             <Button onClick={logout} variant="primary">
@@ -184,7 +182,6 @@ const AdminPage = () => {
             id="add-new-person"
             role="tabpanel"
             aria-labelledby="add-new-person-tab">
-            {/* //----------------------------Tabs end----------------------- */}
             {/* //------------------Add new person from starts------------------------- */}
             <form>
               <div className="form-row">
@@ -278,13 +275,13 @@ const AdminPage = () => {
             id="list-persons"
             role="tabpanel"
             aria-labelledby="list-persons-tab">
-            <ListPersons persons={persons}  roles={roles}/>
+            <ListPersons persons={persons} roles={roles} />
             {/* // child components use effect does not run when parent 
             components any of the state is changed */}
           </div>
         </div>
       </div>
-      {/* //----------------------------Tabs----------------------- */}
+      {/* //----------------------------Tab ends----------------------- */}
     </>
   );
 };

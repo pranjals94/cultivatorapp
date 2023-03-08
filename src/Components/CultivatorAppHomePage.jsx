@@ -1,10 +1,35 @@
-import React, { Component } from "react";
+import React, { useContext, useEffect } from "react";
 import pic from "../GEV-Logo.png";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
+import HttpService from "../Services/HttpService";
+import { Cookies } from "react-cookie";
+
+import { CultivatorAppContext } from "../context/CultivatorAppContext";
 
 const CultivatorHomePage = () => {
   const navigate = useNavigate();
+  const cookies = new Cookies();
+  const a = useContext(CultivatorAppContext);
+
+  useEffect(() => {
+    a.setUser({});
+    const token = cookies.get("access_token");
+    console.log("cookie token", token)
+    if (token) {
+      HttpService.get("/application/getuser").then(
+        (response) => {
+          a.setUser(response.data);
+          navigate("/app/userhomepage");
+        },
+        (error) => {
+          // console.log(error)
+          // alert("OOps!.. Somwthing went wrong");
+        }
+      );
+    }
+  }, []);
+
   return (
     <div
       style={{

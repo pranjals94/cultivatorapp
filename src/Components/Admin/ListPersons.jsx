@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import HttpService from "../../Services/HttpService";
 const ListPersons = (props) => {
-  console.log("list person (child) component props", props);
 
   const [modalData, setModalData] = useState({});
   const [modalFormData, setModalFormData] = useState({
@@ -28,9 +27,10 @@ const ListPersons = (props) => {
     setModalFormData(temp);
     setModalData(item);
   };
+  
   const createUserClicked = () => {
     console.log("modalFormData", modalFormData);
-    HttpService.post("/application/createuser", modalFormData).then(
+    HttpService.post("/admin/createuser", modalFormData).then(
       (response) => {
         alert(response.data.msg);
       },
@@ -125,7 +125,7 @@ const ListPersons = (props) => {
                     onChange={(e) => onchangeHandler(e)}
                   />
                 </div>
-                {/* //-------------input role--------------------------            */}
+                {/* //-------------input role--------------------------*/}
                 <div className="form-group ">
                   <label htmlFor="role">Select a Role</label>
                   <select

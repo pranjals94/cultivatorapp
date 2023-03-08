@@ -1,13 +1,13 @@
 /* set to entire page, under body tag */
-body{ 
+body {
   user-select: none;
 }
 
 .App {
-    max-width: 300px;
-    margin: auto;
-    background: white;
-    padding: 10px;
+  max-width: 300px;
+  margin: auto;
+  background: white;
+  padding: 10px;
 }
 
 .App-logo {
@@ -44,27 +44,61 @@ body{
     transform: rotate(360deg);
   }
 }
-.bg-cardbody{
-  background:radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(233,228,148,1) 100%);
+.bg-cardbody {
+  background: radial-gradient(
+    circle,
+    rgba(238, 174, 202, 1) 0%,
+    rgba(233, 228, 148, 1) 100%
+  );
   border-radius: 0.2rem;
 }
 
-.hovr:hover{
+.hovr:hover {
   background: palegoldenrod;
   cursor: pointer;
   /* border: 1px solid blue; */
   /* position: absolute; */
 }
 
-.cultivatorActive{
+.cultivatorActive {
   border: 2px solid rgb(147, 9, 69);
 }
 
-.userHighliter{
+.userHighliter {
   vertical-align: middle;
-  width:fit-content;
+  width: fit-content;
   background: rgb(236, 255, 30);
   border-radius: 1em;
   border: 3px solid rgb(147, 9, 69);
 }
 
+.mobileSideBarPositionAbsolute {
+  /* background-color: lightgrey; */
+  /* max-width: 40%; */
+  /* background-color: rgba(155, 140, 179, 1) */
+  /* opacity: 1 */
+  position: absolute;
+  /* display:none; */
+  z-index: 2;
+  background: #a8b1b0;
+}
+
+/* axios Loading */
+.axiosLoading {
+  display: none;
+  position: fixed;
+  z-index: 99999999999;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8) url("loading.gif") 50% 50% no-repeat;
+}
+
+body.loading .axiosLoading {
+  /*// css selector ancistor child */
+  display: block;
+}
+body.loading {
+  overflow: hidden;
+}

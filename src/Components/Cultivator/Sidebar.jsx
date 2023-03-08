@@ -25,14 +25,14 @@ const Sidebar = () => {
   return (
     <>
       <h3>HEADDING</h3>
-      {sidebarItems.map(item=>
-        <ul>
-            <li>
+      <ul>
+      {sidebarItems.map((item,indx)=>
+        
+            <li key={indx}>
                 {item.title}
             </li>
-        </ul>
-
       )}
+      </ul>
     </>
   );
 };
