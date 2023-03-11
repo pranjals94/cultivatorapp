@@ -6,9 +6,10 @@ function CultivatorAppStates({ children }) {
   const [user, setUser] = useState({});
 
   // for development
+
   // const [user, setUser] = useState({
   //   nameOfUser: " userDetails.person.name",
-  //   role: "CULTIVATOR",
+  //   role: "RECEPTION",
   //   user_id: "userDetails.id",
   //   person_id: "userDetails.person.id",
   // });

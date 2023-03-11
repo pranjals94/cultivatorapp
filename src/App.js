@@ -10,6 +10,7 @@ import CultivatorAppStates from './context/CultivatorAppStates';
 
 
 function App() {
+  // console.log("process variables",process.env)
   return (
     <>
       <div className="axiosLoading"></div>

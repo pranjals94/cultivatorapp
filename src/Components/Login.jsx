@@ -16,22 +16,25 @@ const LogIn = () => {
   });
 
   const a = useContext(CultivatorAppContext);
-  
+
   useEffect(() => {
     a.setUser({});
     const token = cookies.get("access_token");
     // console.log("cookie token", token)
     if (token) {
-    HttpService.get("/application/getuser").then(
-      (response) => {
-        a.setUser(response.data);
-        navigate("/app/userhomepage");
-      },
-      (error) => {
-        // console.log(error)
-        // alert("OOps!.. Somwthing went wrong");
-      }
-    );}
+      HttpService.get(
+        process.env.REACT_APP_API_URL + "/application/getuser"
+      ).then(
+        (response) => {
+          a.setUser(response.data);
+          navigate("/app/userhomepage");
+        },
+        (error) => {
+          // console.log(error)
+          // alert("OOps!.. Somwthing went wrong");
+        }
+      );
+    }
   }, []);
 
   const onchangeHandler = (e) => {
@@ -42,7 +45,10 @@ const LogIn = () => {
 
   //-----------------------------------------------------------------------------------------------------
   const OnLogIn = () => {
-    HttpService.post("/auth/login", login_credentials).then(
+    HttpService.post(
+      process.env.REACT_APP_API_URL + "/auth/login",
+      login_credentials
+    ).then(
       (response) => {
         navigate("/app/userhomepage");
       },

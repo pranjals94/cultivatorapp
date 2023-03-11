@@ -16,16 +16,17 @@ const UserHomepage = () => {
       "modal-backdrop fade show"
     );
     collection[0]?.remove();
-    HttpService.get("/application/getuser").then(
+    HttpService.get(
+      process.env.REACT_APP_API_URL + "/application/getuser"
+    ).then(
       (response) => {
         a.setUser(response.data);
         console.log(response);
       },
       (error) => {
+        //disable during development
         alert(error.message);
         navigate("/app/login");
-        // console.log(error)
-        // alert("OOps!.. Somwthing went wrong");
       }
     );
   }, []);

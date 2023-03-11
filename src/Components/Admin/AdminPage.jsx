@@ -5,7 +5,6 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import ListPersons from "./ListPersons";
 import { CultivatorAppContext } from "../../context/CultivatorAppContext";
-import { number } from "prop-types";
 
 const AdminPage = () => {
   // const [userData, setUserData] = useState({});

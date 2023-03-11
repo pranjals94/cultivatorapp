@@ -1,21 +1,36 @@
 import React, { useEffect } from "react";
-import { useLocation, Navigate, useNavigate,Link } from "react-router-dom";
+import { useLocation, Navigate, useNavigate, Link } from "react-router-dom";
 import HttpService from "../../Services/HttpService";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 
 const Orientation = () => {
   const [userData, setuserdata] = useState({});
+  const [persons, setPersons] = useState([]); // for build
   const navigate = useNavigate();
 
   useEffect(() => {
-    HttpService.get("/application/getuser").then(
+    HttpService.get(
+      process.env.REACT_APP_API_URL + "/application/getuser"
+    ).then(
       (response) => {
         setuserdata(response.data);
         console.log(response);
       },
       (error) => {
         alert("OOps!.. Somwthing went wrong");
+      }
+    );
+
+    HttpService.get(
+      process.env.REACT_APP_API_URL + "/orientation/getlist"
+    ).then(
+      (response) => {
+        console.log("from list persons component");
+        setPersons(response.data.persons);
+      },
+      (error) => {
+        // alert("OOps!.. Somwthing went wrong");
       }
     );
   }, []);
@@ -35,7 +50,7 @@ const Orientation = () => {
 
   return (
     <>
-          <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <b className="navbar-brand pl-3">ORIENTATION</b>
         <button
           className="navbar-toggler"
@@ -76,10 +91,37 @@ const Orientation = () => {
           </span>
         </div>
       </nav>
-      <h2>
-        <i style={{ color: "red" }}>{userData.nameOfUser}</i>
-      </h2>
-      This is ORIENTATION page welcome to the cultivator app
+      {/* //-----------------table starts--------------------- */}
+      <div className="container border text-center rounded mt-3">
+        <div className="table-responsive">
+          <table className="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Sl No.</th>
+                <th scope="col">Name</th>
+                <th scope="col">Phone No.</th>
+                <th scope="col">Gender</th>
+                <th scope="col">Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {persons.map((item, indx) => (
+                <tr key={indx} data-toggle="modal" data-target="#exampleModal">
+                  <th scope="row">{indx + 1}</th>
+                  <td>{item.name}</td>
+                  <td>{item.phone_no}</td>
+                  <td>{item.gender}</td>
+                  <td>
+                    <span className={item.role ? "userHighliter px-2" : null}>
+                      {item.role}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </>
   );
 };

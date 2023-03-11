@@ -1,16 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import HttpService from "../../Services/HttpService";
+import UploadExcelFile from "./UploadExcelFile";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import pic from "./user.jpg";
+import { CultivatorAppContext } from "../../context/CultivatorAppContext";
+import Modal from "react-bootstrap/Modal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const Reception = () => {
   // let width = window.innerWidth;
   const [reload, setReload] = useState(false); //use effect dependency on state change
-  const [userData, setUserData] = useState({});
   const [activeCultivatorINDX, setActiveCultivatorINDX] = useState(null);
   const [checkedItems, setCheckedItems] = useState([]);
+  const a = useContext(CultivatorAppContext);
   const [activeCultivator, setActiveCultivator] = useState({
     id: null,
     name: "",
@@ -32,21 +37,22 @@ const Reception = () => {
   //   { id: 3, name: "Aamon" },
   //   { id: 4, name: "Kadita" },
   // ]);
+  // const fullscreen_values = [true, "sm-down", "md-down", "lg-down", "xl-down", "xxl-down"];
+  const [fullscreen, setFullscreen] = useState(true);
+  const [show, setShow] = useState(false);
+
+  function handleModalShow() {
+    setFullscreen("sm-down");
+    setShow(true);
+  }
+  function handleModalOk(fullscreen_values) {
+    // setFullscreen(fullscreen_values);
+  }
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    HttpService.get("/application/getuser").then(
-      (response) => {
-        setUserData(response.data);
-        console.log(response);
-      },
-      (error) => {
-        // alert("OOps!.. Somwthing went wrong");
-      }
-    );
-
-    HttpService.get("/reception/getcultivators").then(
+    HttpService.get(process.env.REACT_APP_API_URL + "/reception/getcultivators").then(
       (response) => {
         setCultivators(response.data.cultivators);
         console.log(response);
@@ -56,7 +62,7 @@ const Reception = () => {
       }
     );
 
-    HttpService.get("/reception/getguests").then(
+    HttpService.get(process.env.REACT_APP_API_URL + "/reception/getguests").then(
       (response) => {
         setGuests(response.data.guests);
         console.log("guests", response);
@@ -91,7 +97,7 @@ const Reception = () => {
   }
 
   function logout() {
-    HttpService.get("/auth/logout").then(
+    HttpService.get(process.env.REACT_APP_API_URL + "/auth/logout").then(
       (response) => {
         navigate("/");
         console.log("log out = ", response);
@@ -142,6 +148,14 @@ const Reception = () => {
 
   return (
     <>
+      <Modal show={show} fullscreen={fullscreen} onHide={() => setShow(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Upload Excel File. (.xlsx)</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <UploadExcelFile />
+        </Modal.Body>
+      </Modal>
       <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <b className="navbar-brand pl-3">Reception</b>
         <i className="navbar-brand d-lg-none"> {activeCultivator.name}</i>
@@ -173,8 +187,8 @@ const Reception = () => {
             </li>
           </ul>
           <span className="navbar-text mr-3">
-            Welcome {userData.role}{" "}
-            <i style={{ color: "red" }}>{userData.nameOfUser}</i> !
+            Welcome {a.user.role}{" "}
+            <i style={{ color: "red" }}>{a.user.nameOfUser}</i> !
           </span>
           <span className="navbar-text mr-3">
             <Button onClick={logout} variant="primary">
@@ -184,7 +198,66 @@ const Reception = () => {
         </div>
       </nav>
       {/* //-------------------------------------------nav bar ends--------------------------------- */}
-      <div className="container" style={{ marginTop: "70px" }}>
+      {/* //-----------------search bar starts------------------------ */}
+      <div className="container" style={{ marginTop: "90px" }}>
+        <div
+          className="row px-2 py-2 border rounded"
+          style={{ backgroundColor: "lightgrey" }}>
+          <div
+            className="btn-toolbar justify-content-between"
+            role="toolbar"
+            aria-label="Toolbar with button groups">
+            <div className="btn-group" role="group" aria-label="First group">
+              <button
+                onClick={handleModalShow}
+                type="button"
+                className="btn btn-outline-secondary">
+                Import from Excel
+              </button>
+              <button type="button" className="btn btn-outline-secondary">
+                Test
+              </button>
+              <div className="btn-group" role="group">
+                <button
+                  type="button"
+                  className="btn btn-outline-primary dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  Dropdown
+                </button>
+                <ul className="dropdown-menu">
+                  <li>
+                    <a className="dropdown-item" href="#">
+                      Dropdown link
+                    </a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="#">
+                      Dropdown link
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search"
+                aria-label="Input group example"
+                aria-describedby="btnGroupAddon2"
+              />
+              <div className="input-group-text" id="btnGroupAddon2">
+                <FontAwesomeIcon
+                  // onClick={showSidebar}
+                  className="fa-1x"
+                  icon={faSearch}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* //--------------------------------------------------------------------------------------- */}
         <div className="row pt-3">
           <div className="col-md-6">
             <div className="container border rounded pb-3">
@@ -275,7 +348,8 @@ const Reception = () => {
                     guests.filter((item) => item?.isChecked !== true).length < 1
                   }
                   onChange={(e) => selectHandle(e)}
-                />Select All.
+                />
+                Select All.
                 <Button onClick={onAssignButtonClicked}>Assign</Button>
               </div>
             ) : (
