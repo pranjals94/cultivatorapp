@@ -13,7 +13,7 @@ const UploadExcelFile = () => {
     const formData = new FormData();
     formData.append("file", file);
     HttpService.post(
-      process.env.REACT_APP_API_URL + "/test/exceltest",
+      process.env.REACT_APP_API_URL + "/reception/savefromexcel",
       formData
     ).then(
       (response) => {

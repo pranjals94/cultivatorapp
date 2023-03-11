@@ -5,8 +5,10 @@ import UploadExcelFile from "./UploadExcelFile";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import pic from "./user.jpg";
+import axios from "axios";
 import { CultivatorAppContext } from "../../context/CultivatorAppContext";
 import Modal from "react-bootstrap/Modal";
+import Paginate from "../Common/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
@@ -21,38 +23,45 @@ const Reception = () => {
     name: "",
   });
 
-  const [guests, setGuests] = useState([]); // build purpose uncomment
-  // const [guests, setGuests] = useState([
-  //   { id: 1, name: "pranjal", role: "ADMIN" },
-  //   { id: 2, name: "natalia" },
-  //   { id: 3, name: "Franco" },
-  //   { id: 4, name: "Lemord" },
-  //   { id: 5, name: "provius" },
-  //   { id: 6, name: "Lanchot", role: "Cultivator" },
-  // ]);
-
+  const [pageSize, setPageSize] = useState(10);
+  const [totalCount, setTotalCount] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [guests, setGuests] = useState([]);
   const [cultivators, setCultivators] = useState([]);
-  // const [cultivators, setCultivators] = useState([
-  //   { id: 2, name: "Gatotkatcha" },
-  //   { id: 3, name: "Aamon" },
-  //   { id: 4, name: "Kadita" },
-  // ]);
+
   // const fullscreen_values = [true, "sm-down", "md-down", "lg-down", "xl-down", "xxl-down"];
   const [fullscreen, setFullscreen] = useState(true);
   const [show, setShow] = useState(false);
+
+  const paginationClicked = (currentPage) => refreshList(currentPage);
+  const refreshList = (currentPage) => {
+    axios
+      .get(
+        process.env.REACT_APP_API_URL +
+          "/reception/getguests?currentPage=" +
+          currentPage.toString() +
+          "&pageSize=10"
+      )
+      .then((response) => {
+        let { totalGuests, guests } = response.data;
+        setTotalCount(totalGuests);
+        setGuests(guests);
+        setCurrentPage(currentPage);
+      });
+  };
 
   function handleModalShow() {
     setFullscreen("sm-down");
     setShow(true);
   }
-  function handleModalOk(fullscreen_values) {
-    // setFullscreen(fullscreen_values);
-  }
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    HttpService.get(process.env.REACT_APP_API_URL + "/reception/getcultivators").then(
+    console.log("use effect ran reception.jsx");
+    HttpService.get(
+      process.env.REACT_APP_API_URL + "/reception/getcultivators"
+    ).then(
       (response) => {
         setCultivators(response.data.cultivators);
         console.log(response);
@@ -62,10 +71,13 @@ const Reception = () => {
       }
     );
 
-    HttpService.get(process.env.REACT_APP_API_URL + "/reception/getguests").then(
+    HttpService.get(
+      process.env.REACT_APP_API_URL +
+        "/reception/getguests?currentPage=1&pageSize=10"
+    ).then(
       (response) => {
         setGuests(response.data.guests);
-        console.log("guests", response);
+        setTotalCount(response.data.totalGuests);
       },
       (error) => {
         // alert("OOps!.. Somwthing went wrong");
@@ -223,7 +235,7 @@ const Reception = () => {
                   className="btn btn-outline-primary dropdown-toggle"
                   data-bs-toggle="dropdown"
                   aria-expanded="false">
-                  Dropdown
+                  Actions
                 </button>
                 <ul className="dropdown-menu">
                   <li>
@@ -270,7 +282,7 @@ const Reception = () => {
                     <div className="card text-center ">
                       <div
                         className={`card-body bg-cardbody hovr ${
-                          activeCultivatorINDX == indx
+                          activeCultivatorINDX === indx
                             ? "cultivatorActive"
                             : null
                         }`}>
@@ -284,6 +296,13 @@ const Reception = () => {
             </div>
           </div>
           <div className="col-md-6">
+            <Paginate
+              totalRecords={totalCount}
+              paginateClicked={paginationClicked}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              setActivePage={setCurrentPage}
+            />
             {guests.length ? (
               <div className="container border rounded">
                 <div className="table-responsive">
@@ -351,6 +370,7 @@ const Reception = () => {
                 />
                 Select All.
                 <Button onClick={onAssignButtonClicked}>Assign</Button>
+                <br />
               </div>
             ) : (
               <b>No New persons found</b>

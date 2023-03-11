@@ -4,11 +4,10 @@ import axios from "axios";
 //403 Forbidden
 //404 Not Found
 //500 Internal Server Error
-
 axios.interceptors.request.use(
   (request) => {
     // Do something before request is sent
-    document.body.classList.add("loading");
+    document.body.classList.add("loading"); //this causes flickering in page whenever using axios request
     return request;
   },
   (error) => {
@@ -32,7 +31,7 @@ axios.interceptors.response.use(
     if (axios.isAxiosError(error)) {
       if (error.response) {
         if (error.response.status === 401) {
-          console.log("Unauthorised")
+          console.log("Unauthorised");
           // alert("You are UnauthoriZed. Please Log In. ! ");
           // window.location.href = "/app/login"; //redirect to login page
         }

@@ -93,6 +93,7 @@ body {
   height: 100%;
   width: 100%;
   background: rgba(255, 255, 255, 0.8) url("loading.gif") 50% 50% no-repeat;
+  background-size: 10em 10em;
 }
 
 body.loading .axiosLoading {
