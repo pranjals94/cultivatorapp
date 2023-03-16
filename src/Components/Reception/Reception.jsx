@@ -10,10 +10,16 @@ import { CultivatorAppContext } from "../../context/CultivatorAppContext";
 import Modal from "react-bootstrap/Modal";
 import Paginate from "../Common/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearch,
+  faFilter,
+  faCircleXmark,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Reception = () => {
-  // let width = window.innerWidth;
+  const [searchResult, setSearchResult] = useState(false);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
   const [reload, setReload] = useState(false); //use effect dependency on state change
   const [activeCultivatorINDX, setActiveCultivatorINDX] = useState(null);
   const [checkedItems, setCheckedItems] = useState([]);
@@ -23,7 +29,7 @@ const Reception = () => {
     name: "",
   });
 
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(12);
   const [totalCount, setTotalCount] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [guests, setGuests] = useState([]);
@@ -33,14 +39,42 @@ const Reception = () => {
   const [fullscreen, setFullscreen] = useState(true);
   const [show, setShow] = useState(false);
 
-  const paginationClicked = (currentPage) => refreshList(currentPage);
+  const paginationClicked = (currentPageTemp) => {
+    if (
+      !(
+        (currentPage === Math.ceil(totalCount / pageSize) &&
+          currentPage === currentPageTemp) ||
+        (currentPage === 1 && currentPage === currentPageTemp)
+      )
+    ) {
+      if (searchResult) {
+        // alert("search result is true");
+        HttpService.get(
+          process.env.REACT_APP_API_URL +
+            "/application/search?currentPage=" +
+            currentPageTemp.toString() +
+            "&pageSize=" +
+            pageSize.toString() +
+            "&search_input=" +
+            searchInput.toString()
+        ).then((response) => {
+          setGuests(response.data.persons);
+          setTotalCount(response.data.totalGuests);
+          setCurrentPage(currentPageTemp);
+        });
+      } else {
+        refreshList(currentPageTemp);
+      }
+    }
+  };
   const refreshList = (currentPage) => {
     axios
       .get(
         process.env.REACT_APP_API_URL +
           "/reception/getguests?currentPage=" +
           currentPage.toString() +
-          "&pageSize=10"
+          "&pageSize=" +
+          pageSize.toString()
       )
       .then((response) => {
         let { totalGuests, guests } = response.data;
@@ -73,7 +107,8 @@ const Reception = () => {
 
     HttpService.get(
       process.env.REACT_APP_API_URL +
-        "/reception/getguests?currentPage=1&pageSize=10"
+        "/reception/getguests?currentPage=1&pageSize=" +
+        pageSize.toString()
     ).then(
       (response) => {
         setGuests(response.data.guests);
@@ -158,8 +193,116 @@ const Reception = () => {
     setActiveCultivatorINDX(indx);
   };
 
+  function handleSearch() {
+    if (!searchInput) {
+      alert("emty Search");
+      return;
+    }
+    setSearchResult(true);
+    HttpService.get(
+      process.env.REACT_APP_API_URL +
+        "/application/search?currentPage=1&pageSize=" +
+        pageSize.toString() +
+        "&search_input=" +
+        searchInput.toString()
+    ).then((response) => {
+      console.log(response.data.persons);
+      setGuests(response.data.persons);
+      setTotalCount(response.data.totalGuests);
+      setCurrentPage(1);
+    });
+  }
+
+  const onchangeInputHandler = (e) => {
+    console.log(e.target.value);
+    let temp = searchInput;
+    temp = e.target.value;
+    setSearchInput(temp);
+  };
+
+  const clearSearch = () => {
+    setSearchResult(false);
+    setSearchInput("");
+    refreshList(1);
+  };
+
   return (
     <>
+      <Modal
+        size="lg"
+        animation={false}
+        show={showFilterMenu}
+        onHide={() => setShowFilterMenu(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Apply Search Filters</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form class="row g-3">
+            <div class="col-md-6">
+              <label for="inputEmail4" class="form-label">
+                Email
+              </label>
+              <input type="email" class="form-control" id="inputEmail4" />
+            </div>
+            <div class="col-md-6">
+              <label for="inputPassword4" class="form-label">
+                Password
+              </label>
+              <input type="password" class="form-control" id="inputPassword4" />
+            </div>
+            <div class="col-12">
+              <label for="inputAddress" class="form-label">
+                Address
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputAddress"
+                placeholder="1234 Main St"
+              />
+            </div>
+            <div class="col-12">
+              <label for="inputAddress2" class="form-label">
+                Address 2
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="inputAddress2"
+                placeholder="Apartment, studio, or floor"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="inputCity" class="form-label">
+                City
+              </label>
+              <input type="text" class="form-control" id="inputCity" />
+            </div>
+            <div class="col-md-4">
+              <label for="inputState" class="form-label">
+                State
+              </label>
+              <select id="inputState" class="form-select">
+                <option selected>Choose...</option>
+                <option>...</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label for="inputZip" class="form-label">
+                Zip
+              </label>
+              <input type="text" class="form-control" id="inputZip" />
+            </div>
+            <div class="col-12 d-flex">
+              <div class="mx-auto">
+                <button onClick={handleSearch} class="btn btn-primary">
+                  Go
+                </button>
+              </div>
+            </div>
+          </form>
+        </Modal.Body>
+      </Modal>
       <Modal show={show} fullscreen={fullscreen} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Upload Excel File. (.xlsx)</Modal.Title>
@@ -185,7 +328,7 @@ const Reception = () => {
         <div className="collapse navbar-collapse" id="navbarText">
           <ul className="navbar-nav mr-auto">
             <li className="nav-item ">
-              <Link className="nav-link" to={""}>
+              <Link className="nav-link" to={"/app/userhomepage"}>
                 Home{" "}
               </Link>
             </li>
@@ -210,8 +353,9 @@ const Reception = () => {
         </div>
       </nav>
       {/* //-------------------------------------------nav bar ends--------------------------------- */}
-      {/* //-----------------search bar starts------------------------ */}
+
       <div className="container" style={{ marginTop: "90px" }}>
+        {/* //-----------------search bar------------------------ */}
         <div
           className="row px-2 py-2 border rounded"
           style={{ backgroundColor: "lightgrey" }}>
@@ -251,27 +395,41 @@ const Reception = () => {
                 </ul>
               </div>
             </div>
+
             <div className="input-group">
+              <button
+                onClick={() => setShowFilterMenu(!showFilterMenu)}
+                className="btn btn-outline-secondary"
+                type="button"
+                id="button-addon1">
+                <FontAwesomeIcon className="fa-1x" icon={faFilter} />
+              </button>
               <input
                 type="text"
-                className="form-control"
-                placeholder="Search"
-                aria-label="Input group example"
-                aria-describedby="btnGroupAddon2"
+                className="form-control border"
+                placeholder="Name or Phone No."
+                value={searchInput}
+                onChange={onchangeInputHandler}
+                aria-label="Example text with button addon"
+                aria-describedby="button-addon1"
               />
-              <div className="input-group-text" id="btnGroupAddon2">
+              <button
+                onClick={handleSearch}
+                className="btn btn-outline-secondary"
+                type="button"
+                id="button-addon1">
                 <FontAwesomeIcon
                   // onClick={showSidebar}
                   className="fa-1x"
                   icon={faSearch}
                 />
-              </div>
+              </button>
             </div>
           </div>
         </div>
-        {/* //--------------------------------------------------------------------------------------- */}
+        {/* //----------------------cultivator and preson table row----------------------------------------------------------------- */}
         <div className="row pt-3">
-          <div className="col-md-6">
+          <div className="col-md-5">
             <div className="container border rounded pb-3">
               <div className="row">
                 {cultivators.map((item, indx) => (
@@ -279,33 +437,49 @@ const Reception = () => {
                     key={indx}
                     onClick={() => setCultivator(indx, item.name, item.id)}
                     className="col-6 col-sm-4 col-md-6 col-lg-4 col-xl-3 pt-3">
-                    <div className="card text-center ">
+                    <div
+                      className="card text-center "
+                      style={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        background: "	#ccffff",
+                      }}>
                       <div
-                        className={`card-body bg-cardbody hovr ${
+                        className={`card-body bg-cardbody hovr  ${
                           activeCultivatorINDX === indx
                             ? "cultivatorActive"
                             : null
                         }`}>
                         <img src={pic} alt="..." className="img-thumbnail" />
-                        <p className="card-text">{item.name}</p>
                       </div>
+                      <span>{item.name}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-          <div className="col-md-6">
-            <Paginate
-              totalRecords={totalCount}
-              paginateClicked={paginationClicked}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              setActivePage={setCurrentPage}
-            />
+          <div className="col-md-7">
+            {searchResult ? (
+              <div>
+                search results{" "}
+                <FontAwesomeIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={clearSearch}
+                  className="fa-2x"
+                  icon={faCircleXmark}
+                />
+              </div>
+            ) : null}
             {guests.length ? (
               <div className="container border rounded">
                 <div className="table-responsive">
+                  <Paginate
+                    totalRecords={totalCount}
+                    paginateClicked={paginationClicked}
+                    currentPage={currentPage}
+                    pageSize={pageSize}
+                  />
                   <table className="table table-hover">
                     <thead>
                       <tr>
@@ -344,7 +518,7 @@ const Reception = () => {
                                   value={item.id}
                                   onChange={(e) => selectHandle(e)}
                                 />
-                                {indx + 1}
+                                {indx + 1 + (currentPage - 1) * pageSize}
                               </div>
                             </div>
                           </th>
@@ -373,7 +547,7 @@ const Reception = () => {
                 <br />
               </div>
             ) : (
-              <b>No New persons found</b>
+              <b>No person(s) found</b>
             )}
           </div>
         </div>

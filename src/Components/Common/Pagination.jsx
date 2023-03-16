@@ -5,15 +5,13 @@ import "./Pagination.css";
 const Paginate = (props) => {
   const pagesArrey = [];
 
-  useEffect(() => {
-    if (props.totalRecords === 0) {
-      return;
-    }
-  }, []);
+  if (props.totalRecords <= props.pageSize) {
+    return;
+  }
 
   const noOfPages = Math.ceil(props.totalRecords / props.pageSize);
-  const offsetItems = 4; // offsetItems and pageSize of pagination are inter related test it b4 changing
-  const noOfItems = offsetItems * 2 + 1; //no of elements in  arrey
+  const offsetItems = 3; // offsetItems and pageSize of pagination are inter related test it b4 changing
+  const noOfItems = noOfPages % 2 === 0 ? offsetItems * 2 : offsetItems * 2 + 1; //check even or odd pages
   for (
     let number =
       props.currentPage <= offsetItems
