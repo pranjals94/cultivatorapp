@@ -1,5 +1,5 @@
 import { any } from "prop-types";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CultivatorAppContext } from "./CultivatorAppContext";
 
 function CultivatorAppStates({ children }) {

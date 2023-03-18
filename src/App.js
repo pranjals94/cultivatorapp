@@ -1,6 +1,7 @@
 
 import './App.css';
-import { Routes, Route,  useLocation ,} from 'react-router-dom'
+import { Routes, Route,  } from 'react-router-dom'
+
 
 //-------------page/ component imports---------------
 import CultivatorHomePage from './Components/CultivatorAppHomePage'
@@ -14,6 +15,7 @@ function App() {
   // console.log("process variables",process.env)
   return (
     <>
+
       <div className="axiosLoading"></div>
       <AppRoutes/>
     </>

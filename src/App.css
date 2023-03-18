@@ -92,7 +92,7 @@ body {
   left: 0;
   height: 100%;
   width: 100%;
-  background: rgba(255, 255, 255, 0.8) url("loading.gif") 50% 50% no-repeat;
+  background: rgba(255, 255, 255, 0.548) url("loading1.gif") 50% 50% no-repeat;
   background-size: 10em 10em;
 }
 

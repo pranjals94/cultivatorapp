@@ -1,7 +1,7 @@
 import React, { Component, useState } from "react";
 import HttpService from "../../Services/HttpService";
 
-const UploadExcelFile = () => {
+const UploadExcelFile = (props) => {
   const [file, setFile] = useState(null);
 
   function handleUpload(e) {
@@ -17,12 +17,13 @@ const UploadExcelFile = () => {
       formData
     ).then(
       (response) => {
-        alert(response.data.msg);
-        window.location.reload();
+        props.notify(response.data.msg);
+        props.refresh();
+        // window.location.reload();
       },
       (error) => {
         console.log(error.message);
-        alert("OOps!.. Somwthing went wrong");
+        props.notify("OOps!.. Somwthing went wrong");
       }
     );
   }
@@ -43,7 +44,7 @@ const UploadExcelFile = () => {
         <input
           onChange={handleUpload}
           type="file"
-          //   accept=".xlsx"
+          accept=".xlsx"
           className="form-control"
           id="inputGroupFile04"
           aria-describedby="inputGroupFileAddon04"

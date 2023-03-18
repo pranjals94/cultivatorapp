@@ -13,8 +13,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
   faFilter,
+  faFilterCircleDollar,
+  faFilterCircleXmark,
   faCircleXmark,
 } from "@fortawesome/free-solid-svg-icons";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Reception = () => {
   const [searchResult, setSearchResult] = useState(false);
@@ -29,7 +34,7 @@ const Reception = () => {
     name: "",
   });
 
-  const [pageSize, setPageSize] = useState(12);
+  const [pageSize, setPageSize] = useState(15);
   const [totalCount, setTotalCount] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [guests, setGuests] = useState([]);
@@ -38,6 +43,10 @@ const Reception = () => {
   // const fullscreen_values = [true, "sm-down", "md-down", "lg-down", "xl-down", "xxl-down"];
   const [fullscreen, setFullscreen] = useState(true);
   const [show, setShow] = useState(false);
+
+  function refresh() {
+    setReload(!reload);
+  }
 
   const paginationClicked = (currentPageTemp) => {
     if (
@@ -48,10 +57,10 @@ const Reception = () => {
       )
     ) {
       if (searchResult) {
-        // alert("search result is true");
+        // notify("search result is true");
         HttpService.get(
           process.env.REACT_APP_API_URL +
-            "/application/search?currentPage=" +
+            "/reception/search?currentPage=" +
             currentPageTemp.toString() +
             "&pageSize=" +
             pageSize.toString() +
@@ -92,7 +101,8 @@ const Reception = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("use effect ran reception.jsx");
+    setSearchResult(false);
+    setShow(false); // hide excel upload modal
     HttpService.get(
       process.env.REACT_APP_API_URL + "/reception/getcultivators"
     ).then(
@@ -101,7 +111,7 @@ const Reception = () => {
         console.log(response);
       },
       (error) => {
-        // alert("OOps!.. Somwthing went wrong");
+        // notify("OOps!.. Somwthing went wrong");
       }
     );
 
@@ -115,7 +125,7 @@ const Reception = () => {
         setTotalCount(response.data.totalGuests);
       },
       (error) => {
-        // alert("OOps!.. Somwthing went wrong");
+        // notify("OOps!.. Somwthing went wrong");
       }
     );
   }, [reload]);
@@ -151,18 +161,20 @@ const Reception = () => {
       },
       (error) => {
         console.log(error);
-        alert("OOps!.. Somwthing went wrong");
+        notify("something Went Wrong");
       }
     );
   }
 
   const onAssignButtonClicked = () => {
     if (!activeCultivator.id) {
-      alert("No Cultivator Selected");
+      notify("No Cultivator Selected");
+      // notify("No Cultivator Selected");
       return;
     }
     if (!checkedItems.length) {
-      alert("please select person(s)");
+      notify("please select person(s)");
+      // notify("please select person(s)");
       return;
     }
     // console.log("Assign Button clicked");
@@ -172,12 +184,12 @@ const Reception = () => {
       persons: checkedItems,
     }).then(
       (response) => {
-        setReload(!reload); //just change state to trigger useEffect
-        alert("Cultivator Assigned to Persons.");
+        refresh(); //just change state to trigger useEffect
+        notify("Cultivator Assigned to Persons.");
         // console.log("assign cultivator to person response", response.data);
       },
       (error) => {
-        // alert("OOps!.. Somwthing went wrong");
+        // notify("OOps!.. Somwthing went wrong");
       }
     );
   };
@@ -195,13 +207,13 @@ const Reception = () => {
 
   function handleSearch() {
     if (!searchInput) {
-      alert("emty Search");
+      notify("emty Search");
       return;
     }
     setSearchResult(true);
     HttpService.get(
       process.env.REACT_APP_API_URL +
-        "/application/search?currentPage=1&pageSize=" +
+        "/reception/search?currentPage=1&pageSize=" +
         pageSize.toString() +
         "&search_input=" +
         searchInput.toString()
@@ -225,9 +237,24 @@ const Reception = () => {
     setSearchInput("");
     refreshList(1);
   };
+  const notify = (e) => {
+    toast.clearWaitingQueue();
+    toast.dismiss();
+    toast.info(e, {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
 
   return (
     <>
+      <ToastContainer limit={1} />
       <Modal
         size="lg"
         animation={false}
@@ -295,7 +322,12 @@ const Reception = () => {
             </div>
             <div class="col-12 d-flex">
               <div class="mx-auto">
-                <button onClick={handleSearch} class="btn btn-primary">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSearch();
+                  }}
+                  class="btn btn-primary">
                   Go
                 </button>
               </div>
@@ -308,7 +340,7 @@ const Reception = () => {
           <Modal.Title>Upload Excel File. (.xlsx)</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <UploadExcelFile />
+          <UploadExcelFile notify={notify} refresh={refresh} />
         </Modal.Body>
       </Modal>
       <nav className="navbar navbar-expand-lg navbar-light bg-light fixed-top">
